@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: init-sql
+  namespace: {{ .Values.namespace }}
+data:
+  init.sql: |
+    CREATE TABLE IF NOT EXISTS movies (
+      id SERIAL PRIMARY KEY,
+      title TEXT NOT NULL,
+      year INT,
+      rating NUMERIC(2,1)
+    );
+    INSERT INTO movies (title, year, rating) VALUES
+      ('The Matrix', 1999, 8.7),
+      ('Spirited Away', 2001, 8.6),
+      ('Inception', 2010, 8.8)
+    ON CONFLICT DO NOTHING;

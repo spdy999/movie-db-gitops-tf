@@ -1,0 +1,71 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: {{ .Values.namespace }}
+data:
+  nginx.conf: |
+    events {}
+    http {
+      server {
+        listen 80;
+        location / {
+          root /usr/share/nginx/html;
+          index index.html;
+        }
+        location /api/ {
+          proxy_pass http://backend.{{ .Values.namespace }}.svc.cluster.local:{{ .Values.backend.port }}/;
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+        }
+      }
+    }
+  index.html: |
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8"/>
+        <title>Movie DB (Fullstack)</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <style>
+          body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 2rem; }
+          h1 { margin-bottom: 0.5rem; }
+          table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+          th, td { border: 1px solid #ddd; padding: 8px; }
+          th { background: #f3f3f3; text-align: left; }
+          button { padding: .5rem 1rem; }
+        </style>
+      </head>
+      <body>
+        <h1>🎬 Movie DB (Fullstack)</h1>
+        <p>Frontend calls <code>/api/movies</code> on the backend.</p>
+        <button id="load">Load Movies</button>
+        <table id="tbl" style="display:none">
+          <thead><tr><th>ID</th><th>Title</th><th>Year</th><th>Rating</th></tr></thead>
+          <tbody></tbody>
+        </table>
+        <script>
+          const btn = document.getElementById('load');
+          const tbl = document.getElementById('tbl');
+          const tbody = tbl.querySelector('tbody');
+          btn.onclick = async () => {
+            btn.disabled = true;
+            try {
+              const res = await fetch('/api/movies');
+              const data = await res.json();
+              tbody.innerHTML = '';
+              data.forEach(row => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `<td>${row.id}</td><td>${row.title}</td><td>${row.year ?? ''}</td><td>${row.rating ?? ''}</td>`;
+                tbody.appendChild(tr);
+              });
+              tbl.style.display = '';
+            } catch (e) {
+              alert('Failed to load: ' + e);
+            } finally {
+              btn.disabled = false;
+            }
+          };
+        </script>
+      </body>
+    </html>

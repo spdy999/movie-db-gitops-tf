@@ -1,0 +1,42 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-init
+  namespace: {{ .Values.namespace }}
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: psql
+          image: {{ .Values.postgres.image }}
+          command: ["/bin/sh","-c"]
+          args:
+            - |
+              set -e
+              until pg_isready -h postgres -p {{ .Values.postgres.port }}; do sleep 2; done
+              echo "Applying init.sql"
+              PGPASSWORD=$(cat /secrets/password) psql \
+                -h postgres -p {{ .Values.postgres.port }} \
+                -U $(cat /secrets/username) \
+                -d {{ .Values.postgres.db }} \
+                -f /init/init.sql
+          volumeMounts:
+            - name: init-sql
+              mountPath: /init
+            - name: secrets
+              mountPath: /secrets
+      volumes:
+        - name: init-sql
+          configMap:
+            name: init-sql
+        - name: secrets
+          projected:
+            sources:
+              - secret:
+                  name: postgres-secret
+                  items:
+                    - key: username
+                      path: username
+                    - key: password
+                      path: password
