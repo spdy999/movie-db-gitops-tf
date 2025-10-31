@@ -7,7 +7,7 @@ variable "kubeconfig" {
 variable "app_repo_url" {
   description = "Git repo URL ArgoCD will sync from (this repo path). For local demo, keep as placeholder and ArgoCD will still use in-cluster repo-server (you can push this repo and update)"
   type        = string
-  default     = "https://github.com/your-username/movie-db-gitops-tf"
+  default     = "https://github.com/spdy999/movie-db-gitops-tf"
 }
 
 variable "app_path" {

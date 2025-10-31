@@ -7,7 +7,7 @@ terraform {
     }
     helm = {
       source  = "hashicorp/helm"
-      version = ">= 2.12.1"
+      version = "~> 2.11.0"
     }
     kubectl = {
       source  = "gavinbunney/kubectl"
@@ -16,17 +16,20 @@ terraform {
   }
 }
 
+# Kubernetes provider — used by both Helm and Kubectl
 provider "kubernetes" {
   config_path = var.kubeconfig
 }
 
+# Helm provider — use nested kubernetes block (supported in v2.11.x)
 provider "helm" {
   kubernetes {
     config_path = var.kubeconfig
   }
 }
 
+# Kubectl provider for ArgoCD manifests
 provider "kubectl" {
-  config_path = var.kubeconfig
+  config_path      = var.kubeconfig
   load_config_file = true
 }

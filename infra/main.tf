@@ -46,8 +46,8 @@ resource "kubectl_manifest" "app" {
 }
 
 output "argocd_admin_password" {
-  value       = try(base64decode(kubernetes_secret.argocd_initial.data.password), "")
-  description = "Initial ArgoCD admin password"
+  value       = try(data.kubernetes_secret.argocd_initial.data.password, "")
+  description = "Base64-encoded ArgoCD admin password"
   sensitive   = true
 }
 
