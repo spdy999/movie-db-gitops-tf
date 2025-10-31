@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend
-  namespace: {{ .Values.namespace }}
+  namespace: { { .Values.namespace } }
 spec:
   replicas: 1
   selector:
@@ -15,20 +15,6 @@ spec:
     spec:
       containers:
         - name: react-frontend
-          image: {{ .Values.images.frontend }}
+          image: { { .Values.images.frontend } }
           ports:
-            - containerPort: {{ .Values.frontend.port }}
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: frontend
-  namespace: {{ .Values.namespace }}
-spec:
-  selector:
-    app: frontend
-  ports:
-    - name: http
-      port: {{ .Values.frontend.port }}
-      targetPort: {{ .Values.frontend.port }}
-  type: ClusterIP
+            - containerPort: { { .Values.frontend.port } }
