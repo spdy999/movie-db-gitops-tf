@@ -14,27 +14,21 @@ spec:
         app: frontend
     spec:
       containers:
-        - name: nginx
+        - name: react-frontend
           image: {{ .Values.images.frontend }}
           ports:
             - containerPort: {{ .Values.frontend.port }}
-          volumeMounts:
-            - name: conf
-              mountPath: /etc/nginx/nginx.conf
-              subPath: nginx.conf
-            - name: html
-              mountPath: /usr/share/nginx/html/index.html
-              subPath: index.html
-      volumes:
-        - name: conf
-          configMap:
-            name: frontend-config
-            items:
-              - key: nginx.conf
-                path: nginx.conf
-        - name: html
-          configMap:
-            name: frontend-config
-            items:
-              - key: index.html
-                path: index.html
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: {{ .Values.namespace }}
+spec:
+  selector:
+    app: frontend
+  ports:
+    - name: http
+      port: {{ .Values.frontend.port }}
+      targetPort: {{ .Values.frontend.port }}
+  type: ClusterIP

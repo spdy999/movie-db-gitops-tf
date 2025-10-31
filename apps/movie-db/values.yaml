@@ -1,8 +1,7 @@
 namespace: movie-db
-
 images:
   backend: "localhost/moviedb-backend:dev"
-  frontend: "nginx:alpine"
+  frontend: "localhost/moviedb-frontend:dev"
 postgres:
   image: postgres:15
   db: moviedb
