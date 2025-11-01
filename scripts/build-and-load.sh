@@ -4,8 +4,8 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 IMAGE_NAME_BE="moviedb-backend:dev"
 IMAGE_NAME_FE="moviedb-frontend:dev"
-IMAGE_TAR_BE="/tmp/moviedb-backend.tar"
-IMAGE_TAR_FE="/tmp/moviedb-frontend.tar"
+IMAGE_TAR_BE="moviedb-backend.tar"
+IMAGE_TAR_FE="moviedb-frontend.tar"
 
 echo "📦 Building backend image with Podman..."
 podman build -t ${IMAGE_NAME_BE} "${ROOT}/services/backend"
@@ -23,5 +23,5 @@ kind load image-archive "${IMAGE_TAR_FE}" --name movie-db
 
 echo "✅ Image ${IMAGE_NAME_BE} loaded into Kind."
 echo "✅ Image ${IMAGE_NAME_FE} loaded into Kind."
-echo "Cleanup temporary tar..."
-rm -f "${IMAGE_TAR}"
+# echo "Cleanup temporary tar..."
+# rm -f "${IMAGE_TAR}"
