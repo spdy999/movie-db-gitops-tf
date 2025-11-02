@@ -19,16 +19,6 @@ spec:
           adminPassword: admin
           service:
             type: ClusterIP
-        prometheus:
-          prometheusSpec:
-            storageSpec:
-              volumeClaimTemplate:
-                spec:
-                  accessModes: ["ReadWriteOnce"]
-                  resources:
-                    requests:
-                      storage: 5Gi
-                  storageClassName: local-path
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
