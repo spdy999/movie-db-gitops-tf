@@ -8,6 +8,8 @@ postgres:
   user: movie
   password: moviepass
   port: 5432
+  storageClass: standard
+  storageSize: 1Gi
 backend:
   port: 8000
 frontend:
