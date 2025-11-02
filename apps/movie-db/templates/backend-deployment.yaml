@@ -2,9 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
-  namespace: {{ .Values.namespace }}
+  namespace: {{.Values.namespace}}
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       app: backend
@@ -15,9 +15,9 @@ spec:
     spec:
       containers:
         - name: app
-          image: {{ .Values.images.backend }}
+          image: {{.Values.images.backend}}
           ports:
-            - containerPort: {{ .Values.backend.port }}
+            - containerPort: {{.Values.backend.port}}
           env:
             - name: DATABASE_URL
               value: "postgresql://{{ .Values.postgres.user }}:{{ .Values.postgres.password }}@postgres:{{ .Values.postgres.port }}/{{ .Values.postgres.db }}"
