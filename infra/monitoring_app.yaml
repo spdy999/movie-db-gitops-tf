@@ -1,30 +1,55 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: monitoring
+  name: monitoring-lite
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://prometheus-community.github.io/helm-charts
-    chart: kube-prometheus-stack
-    targetRevision: 61.3.0
+    chart: prometheus
+    targetRevision: 25.27.0
     helm:
-      releaseName: monitoring
+      releaseName: monitoring-lite
       values: |
-        crds:
+        alertmanager:
+          enabled: true
+        pushgateway:
           enabled: false
-        grafana:
-          adminUser: admin
-          adminPassword: admin
+        server:
+          persistentVolume:
+            enabled: false
+        serverFiles:
+          prometheus.yml:
+            scrape_configs:
+              - job_name: 'kubernetes-nodes'
+                static_configs:
+                  - targets: ['localhost:9100']
+        serviceAccounts:
+          server:
+            create: true
+        server.service:
+          type: ClusterIP
+        serviceAccounts:
+          alertmanager:
+            create: true
+        prometheus-node-exporter:
+          hostNetwork: false     # don’t bind to the host network
+          hostPort: false        # disable hostPort 9100
           service:
             type: ClusterIP
+          tolerations: []        # remove any taints if you had them
+          affinity: {}           # disable NodeAffinity restrictions
+        server:
+          persistentVolume:
+            enabled: false
+
+        alertmanager:
+          persistentVolume:
+            enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
   syncPolicy:
-    # automated:
-    #   prune: true
-    #   selfHeal: true
     syncOptions:
       - CreateNamespace=true
