@@ -45,14 +45,14 @@ resource "kubectl_manifest" "app" {
 }
 
 # --- Monitoring CRDs Application ---
-data "kubectl_path_documents" "monitoring_crds_app" {
-  pattern = "${path.module}/monitoring_crds_app.yaml"
-}
-
-resource "kubectl_manifest" "monitoring_crds_app" {
-  yaml_body  = data.kubectl_path_documents.monitoring_crds_app.documents[0]
-  depends_on = [helm_release.argocd]
-}
+# data "kubectl_path_documents" "monitoring_crds_app" {
+#   pattern = "${path.module}/monitoring_crds_app.yaml"
+# }
+#
+# resource "kubectl_manifest" "monitoring_crds_app" {
+#   yaml_body  = data.kubectl_path_documents.monitoring_crds_app.documents[0]
+#   depends_on = [helm_release.argocd]
+# }
 
 # --- Monitoring Application ---
 data "kubectl_path_documents" "mon_app" {
@@ -61,7 +61,8 @@ data "kubectl_path_documents" "mon_app" {
 
 resource "kubectl_manifest" "mon_app" {
   yaml_body  = data.kubectl_path_documents.mon_app.documents[0]
-  depends_on = [helm_release.argocd, kubectl_manifest.monitoring_crds_app]
+  depends_on = [helm_release.argocd]
+  # depends_on = [helm_release.argocd, kubectl_manifest.monitoring_crds_app]
 }
 
 # --- ArgoCD Admin Secret ---

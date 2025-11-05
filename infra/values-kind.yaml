@@ -1,0 +1,13 @@
+alertmanager:
+  alertmanagerSpec:
+    configReloaderImage:
+      repository: quay.io/prometheus-operator/prometheus-config-reloader
+      tag: v0.73.2
+    storageSpec: {} # use ephemeral emptyDir
+prometheus:
+  prometheusSpec:
+    storageSpec: {} # use ephemeral emptyDir
+
+grafana:
+  persistence:
+    enabled: false

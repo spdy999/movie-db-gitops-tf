@@ -1,52 +1,79 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: monitoring-lite
+  name: monitoring
   namespace: argocd
 spec:
   project: default
   source:
     repoURL: https://prometheus-community.github.io/helm-charts
-    chart: prometheus
-    targetRevision: 25.27.0
+    chart: kube-prometheus-stack
+    targetRevision: 75.9.0
     helm:
-      releaseName: monitoring-lite
+      releaseName: monitoring
       values: |
-        alertmanager:
-          enabled: true
-        pushgateway:
+        # --- CRDs ---
+        # Set true once (first install), false after.
+        crds:
           enabled: false
-        server:
-          persistentVolume:
-            enabled: false
-        serverFiles:
-          prometheus.yml:
-            scrape_configs:
-              - job_name: 'kubernetes-nodes'
-                static_configs:
-                  - targets: ['localhost:9100']
-        serviceAccounts:
-          server:
-            create: true
-        server.service:
-          type: ClusterIP
-        serviceAccounts:
-          alertmanager:
-            create: true
-        prometheus-node-exporter:
-          hostNetwork: false     # don’t bind to the host network
-          hostPort: false        # disable hostPort 9100
-          service:
-            type: ClusterIP
-          tolerations: []        # remove any taints if you had them
-          affinity: {}           # disable NodeAffinity restrictions
-        server:
-          persistentVolume:
-            enabled: false
-
         alertmanager:
-          persistentVolume:
+          alertmanagerSpec:
+            storageSpec: {} # use ephemeral emptyDir
+        prometheus:
+          prometheusSpec:
+            storageSpec: {} # use ephemeral emptyDir
+
+        grafana:
+          persistence:
             enabled: false
+        kube-state-metrics:
+          enabled: true
+        # # --- CRDs ---
+        # # Set true once (first install), false after.
+        # crds:
+        #   enabled: false
+        #
+        # # --- Grafana ---
+        # grafana:
+        #   adminUser: admin
+        #   adminPassword: admin
+        #   service:
+        #     type: ClusterIP
+        #
+        # # --- Prometheus ---
+        # prometheus:
+        #   prometheusSpec:
+        #     retention: 2d
+        #     storage:
+        #       volumeClaimTemplate:
+        #         spec:
+        #           accessModes: ["ReadWriteOnce"]
+        #           resources:
+        #             requests:
+        #               storage: 2Gi
+        #           storageClassName: local-path
+        #
+        # # --- Alertmanager ---
+        # alertmanager:
+        #   alertmanagerSpec:
+        #     storage: {}
+        #     portName: web
+        #
+        # # --- Node Exporter / Metrics ---
+        # prometheus-node-exporter:
+        #   hostNetwork: false
+        #   hostPort: false
+        #
+        # kube-state-metrics:
+        #   enabled: true
+        #
+        # # --- Operator ---
+        # prometheusOperator:
+        #   createCustomResource: true
+        #   admissionWebhooks:
+        #     enabled: true
+        #     patch:
+        #       enabled: true
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring

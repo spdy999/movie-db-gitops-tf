@@ -1,0 +1,57 @@
+grafana:
+  adminUser: admin
+  adminPassword: admin
+  service:
+    type: ClusterIP
+prometheus:
+  prometheusSpec:
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+          storageClassName: local-path
+alertmanager:
+  alertmanagerSpec:
+    storage:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 2Gi
+          storageClassName: local-path
+# prometheus:
+#   prometheusSpec:
+#     retention: 2d
+#     serviceMonitorSelectorNilUsesHelmValues: false
+#     podMonitorSelectorNilUsesHelmValues: false
+#     storageSpec:
+#       volumeClaimTemplate:
+#         spec:
+#           accessModes: ["ReadWriteOnce"]
+#           resources:
+#             requests:
+#               storage: 5Gi
+#
+# alertmanager:
+#   alertmanagerSpec:
+#     storage:
+#       volumeClaimTemplate:
+#         spec:
+#           accessModes: ["ReadWriteOnce"]
+#           resources:
+#             requests:
+#               storage: 2Gi
+#
+# prometheus-node-exporter:
+#   hostNetwork: false
+#   hostPort: false
+#
+# kube-state-metrics:
+#   enabled: true
+#
+# prometheusOperator:
+#   createCustomResource: true
