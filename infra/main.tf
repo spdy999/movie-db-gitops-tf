@@ -19,8 +19,14 @@ resource "helm_release" "argocd" {
   # Minimal values, defaults are fine for local
   values = [<<-YAML
     configs:
-      params:
-        server.insecure: true
+      cm:
+        server.insecure: "true"
+
+    server:
+      service:
+        type: NodePort
+        nodePortHttp: 30080
+        nodePortHttps: 30443
   YAML
   ]
   depends_on = [kubernetes_namespace.argocd]
